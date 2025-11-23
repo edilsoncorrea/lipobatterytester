@@ -1,7 +1,9 @@
 #ifndef BATTERY_ANALYZER_H
 #define BATTERY_ANALYZER_H
 
+#ifndef UNIT_TEST
 #include <Arduino.h>
+#endif
 #include "config.h"
 
 /**

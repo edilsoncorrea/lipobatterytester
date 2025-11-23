@@ -1,8 +1,22 @@
 #include <unity.h>
+
+// Define UNIT_TEST before including anything
+#define UNIT_TEST
+
+// Include config first to ensure constants are defined
+#include "../include/config.h"
+
+// Include only the battery analyzer implementation
+#include "../include/BatteryAnalyzer.h"
 #include "../src/BatteryAnalyzer.cpp"
 
 // Test cell detection for 1S battery
 void test_detect_1S_battery() {
+    // First, let's verify our constants are correct
+    // This will help debug the cell detection issues
+    // CELL_VOLTAGE_MIN should be 2.9
+    // CELL_VOLTAGE_MAX should be 4.2
+    
     // 1S battery fully charged (4.2V)
     TEST_ASSERT_EQUAL(1, BatteryAnalyzer::detectCellCount(4.2));
     
