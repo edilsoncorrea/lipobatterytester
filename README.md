@@ -10,6 +10,7 @@ An automatic LiPo battery tester for ESP32-C3 that detects cell count (1S-6S) an
 - **Voltage Divider Protection**: Safe measurement circuit prevents ADC damage when testing up to 6S batteries
 - **Configurable Debug Levels**: Multiple verbosity levels for debugging and monitoring
 - **Comprehensive Unit Tests**: Full test suite to validate cell detection accuracy
+- **PC Simulator**: Test the algorithm on your computer without ESP32 hardware ([simulator/](simulator/))
 
 ## Hardware Requirements
 
@@ -74,6 +75,19 @@ The system automatically detects the number of cells by:
 - **Level 3** (RAW): Shows raw ADC readings and all intermediate values
 
 ## Installation
+
+### Quick Start (No Hardware Required)
+
+Want to test the algorithm before building the hardware? Try the **PC Simulator**:
+
+```bash
+cd simulator
+make demo          # Run automated test cases
+make interactive   # Test with custom voltages
+make monitor       # Watch a battery discharge simulation
+```
+
+See [simulator/README.md](simulator/README.md) for detailed instructions.
 
 ### Prerequisites
 - [PlatformIO](https://platformio.org/) installed in VS Code or CLI
