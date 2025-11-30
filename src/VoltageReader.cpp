@@ -5,7 +5,12 @@ float VoltageReader::voltageDividerRatio = 0.0;
 void VoltageReader::begin() {
     // Configure ADC
     pinMode(ADC_PIN, INPUT);
+    
+#ifndef ARDUINO_PRO_MINI
+    // ESP32 supports configurable ADC resolution
     analogReadResolution(ADC_RESOLUTION);
+#endif
+    // Arduino Pro Mini uses fixed 10-bit ADC resolution
     
     // Calculate voltage divider ratio: (R1 + R2) / R2
     voltageDividerRatio = (VOLTAGE_DIVIDER_R1 + VOLTAGE_DIVIDER_R2) / VOLTAGE_DIVIDER_R2;

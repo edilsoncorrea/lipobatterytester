@@ -7,11 +7,18 @@ void DebugLogger::begin(int level) {
     
     if (debugLevel > DEBUG_LEVEL_NONE) {
         Serial.begin(115200);
-        delay(100); // Wait for serial to initialize
-        Serial.println("\n=== LiPo Battery Tester Debug Logger ===");
+        delay(1000); // Wait for serial to initialize properly
+        
+        // Send multiple messages to ensure connection
+        for (int i = 0; i < 3; i++) {
+            Serial.println("\n=== LiPo Battery Tester Debug Logger ===");
+            delay(100);
+        }
+        
         Serial.print("Debug Level: ");
         Serial.println(debugLevel);
         Serial.println("========================================\n");
+        Serial.flush();
     }
 }
 

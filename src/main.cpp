@@ -8,24 +8,27 @@
 void setup() {
     // Initialize debug logger first
     DebugLogger::begin(DEBUG_VERBOSITY);
+    delay(100);
     DebugLogger::log("Starting LiPo Battery Tester...");
+    DebugLogger::log("ESP32-C3 LiPo Battery Tester v1.0");
+    DebugLogger::log("========================================");
     
     // Initialize voltage reader
     VoltageReader::begin();
     DebugLogger::log("Voltage reader initialized");
     
-    // Initialize display
+    // Initialize display (non-blocking)
+    DebugLogger::log("Attempting to initialize display...");
     if (!DisplayManager::begin()) {
-        DebugLogger::log("ERROR: Display initialization failed!");
-        while (1) {
-            delay(1000); // Halt if display fails
-        }
+        DebugLogger::log("WARNING: Display initialization failed!");
+        DebugLogger::log("Continuing without display (debug mode only)");
+        // Don't halt - continue for debugging
+    } else {
+        DebugLogger::log("Display initialized successfully");
+        // Show initialization message
+        DisplayManager::displayInitMessage();
+        delay(2000);
     }
-    DebugLogger::log("Display initialized");
-    
-    // Show initialization message
-    DisplayManager::displayInitMessage();
-    delay(2000);
     
     DebugLogger::log("System ready!\n");
 }

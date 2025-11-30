@@ -1,6 +1,6 @@
 # LiPo Battery Tester
 
-An automatic LiPo battery tester for ESP32-C3 that detects cell count (1S-6S) and displays battery status on a 0.91" OLED display.
+An automatic LiPo battery tester that detects cell count (1S-6S) and displays battery status on a 0.91" OLED display. **Compatible with ESP32-C3 and Arduino Pro Mini**.
 
 ## Features
 
@@ -10,14 +10,22 @@ An automatic LiPo battery tester for ESP32-C3 that detects cell count (1S-6S) an
 - **Voltage Divider Protection**: Safe measurement circuit prevents ADC damage when testing up to 6S batteries
 - **Configurable Debug Levels**: Multiple verbosity levels for debugging and monitoring
 - **Comprehensive Unit Tests**: Full test suite to validate cell detection accuracy
-- **PC Simulator**: Test the algorithm on your computer without ESP32 hardware ([simulator/](simulator/))
+- **PC Simulator**: Test the algorithm on your computer without hardware ([simulator/](simulator/))
+- **Multi-Platform**: Works on ESP32-C3 (3.3V) and Arduino Pro Mini (5V) - [Arduino Setup Guide](docs/ARDUINO_PRO_MINI.md)
+
+## Supported Hardware
+
+| Platform | Voltage | ADC Resolution | Max Input | Status |
+|----------|---------|----------------|-----------|---------|
+| **ESP32-C3** | 3.3V | 12-bit (0-4095) | 25.35V (6S safe) | ✅ Primary |
+| **Arduino Pro Mini** | 5V | 10-bit (0-1023) | 38.43V (9S+ safe) | ✅ Supported |
 
 ## Hardware Requirements
 
-### Components
-- ESP32-C3 Development Board (ESP32-C3-DevKitM-1 or similar)
-- 0.91" OLED Display (128x32, I2C, SSD1306)
-- Resistors for voltage divider:
+### Components (Both Platforms)
+- **Microcontroller**: ESP32-C3-DevKitM-1 **OR** Arduino Pro Mini (8MHz, 3.3V/5V)
+- **Display**: 0.91" OLED Display (128x32, I2C, SSD1306)
+- **Voltage Divider Resistors**:
   - R1: 68kΩ (high side)
   - R2: 10kΩ (low side/ground)
 - Connecting wires
@@ -91,7 +99,7 @@ See [simulator/README.md](simulator/README.md) for detailed instructions.
 
 ### Prerequisites
 - [PlatformIO](https://platformio.org/) installed in VS Code or CLI
-- ESP32 board support package
+- Board support packages (ESP32 or Arduino AVR)
 - Git (for cloning the repository)
 
 ### Setup Instructions
@@ -102,34 +110,101 @@ See [simulator/README.md](simulator/README.md) for detailed instructions.
    cd lipobatterytester
    ```
 
-2. **Open in PlatformIO**
-   - Open the project folder in VS Code with PlatformIO extension
-   - Or use PlatformIO CLI
-
-3. **Build the project**
+2. **Choose your platform and build**
+   
+   **For ESP32-C3:**
+   ```bash
+   pio run -e esp32-c3-devkitm-1
+   ```
+   
+   **For Arduino Pro Mini:**
+   ```bash
+   pio run -e pro-mini
+   ```
+   
+   **For both platforms:**
    ```bash
    pio run
    ```
 
-4. **Upload to ESP32-C3**
+3. **Upload to your board**
+   
+   **ESP32-C3:**
    ```bash
-   pio run --target upload
+   pio run -e esp32-c3-devkitm-1 -t upload
+   ```
+   
+   **Arduino Pro Mini (requires USB-Serial converter):**
+   ```bash
+   pio run -e pro-mini -t upload
    ```
 
-5. **Monitor serial output** (optional)
+4. **Monitor serial output** (optional)
    ```bash
-   pio device monitor
+   pio run -e esp32-c3-devkitm-1 -t monitor   # For ESP32-C3
+   pio run -e pro-mini -t monitor              # For Arduino Pro Mini
    ```
+
+## Hardware Setup
+
+### ESP32-C3 Pin Configuration
+
+```
+Battery (+) ----[R1: 67.2kΩ]----+----[R2: 10.05kΩ]---- GND
+                                |
+                                +---- GPIO0 (ADC)
+
+OLED SDA ---- GPIO8
+OLED SCL ---- GPIO9
+OLED VCC ---- 3.3V
+OLED GND ---- GND
+```
+
+### Arduino Pro Mini Pin Configuration
+
+```
+Battery (+) ----[R1: 67.2kΩ]----+----[R2: 10.05kΩ]---- GND
+                                |
+                                +---- A0 (ADC)
+
+OLED SDA ---- A4
+OLED SCL ---- A5
+OLED VCC ---- VCC (3.3V or 5V)
+OLED GND ---- GND
+
+USB-Serial Converter:
+VCC → VCC, GND → GND, TX → RX(0), RX → TX(1), DTR → DTR
+```
+
+### Platform Comparison
+
+| Feature | ESP32-C3 | Arduino Pro Mini |
+|---------|-----------|------------------|
+| **Voltage** | 3.3V | 3.3V or 5V |
+| **ADC** | GPIO0 | A0 |
+| **I2C** | GPIO8/9 | A4/A5 |
+| **Resolution** | 12-bit (0-4095) | 10-bit (0-1023) |
+| **Max Input** | 25.35V (6S safe) | 38.43V (9S+ safe) |
+| **Update Rate** | 500ms | 1000ms |
+| **USB** | Built-in | Requires converter |
+
+For detailed Arduino Pro Mini setup, see [docs/ARDUINO_PRO_MINI.md](docs/ARDUINO_PRO_MINI.md).
 
 ## Configuration
 
-All configuration options are in `include/config.h`:
-
-### Pin Configuration
+### ESP32-C3 Configuration (include/config.h)
 ```cpp
 #define ADC_PIN 0           // GPIO0 for voltage measurement
 #define I2C_SDA 8           // GPIO8 for OLED data
 #define I2C_SCL 9           // GPIO9 for OLED clock
+```
+
+### Arduino Pro Mini Configuration (include/config_arduino.h)
+```cpp
+#define ADC_PIN A0          // A0 for voltage measurement
+#define I2C_SDA A4          // A4 for OLED data (automatic)
+#define I2C_SCL A5          // A5 for OLED clock (automatic)
+```
 ```
 
 ### Voltage Divider

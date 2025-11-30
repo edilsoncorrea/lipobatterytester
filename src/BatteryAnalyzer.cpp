@@ -1,5 +1,9 @@
 #include "BatteryAnalyzer.h"
-#include <cmath>
+#ifdef ARDUINO_PRO_MINI
+#include <math.h>  // Arduino uses math.h instead of cmath
+#else
+#include <cmath>   // ESP32 uses cmath
+#endif
 
 int BatteryAnalyzer::detectCellCount(float voltage) {
     // LiPo cell voltage specifications

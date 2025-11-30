@@ -3,8 +3,12 @@
 Adafruit_SSD1306* DisplayManager::display = nullptr;
 
 bool DisplayManager::begin() {
-    // Initialize I2C
-    Wire.begin(I2C_SDA, I2C_SCL);
+    // Initialize I2C with platform-specific pins
+#ifdef ARDUINO_PRO_MINI
+    Wire.begin();  // Arduino Pro Mini uses default I2C pins (A4=SDA, A5=SCL)
+#else
+    Wire.begin(I2C_SDA, I2C_SCL);  // ESP32-C3 uses custom pins
+#endif
     
     // Create display object
     display = new Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
